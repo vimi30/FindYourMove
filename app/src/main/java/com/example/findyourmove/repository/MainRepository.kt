@@ -40,4 +40,7 @@ class MainRepository
 
     suspend fun getMovieDetails(movie_id:Int) =
             tmdbService.getMovieDetails(movie_id,Constants.API_KEY)
+
+    suspend fun getTVShowDetails(tv_id:Int) =
+        tmdbService.getTVShowDetails(tv_id,Constants.API_KEY)
 }

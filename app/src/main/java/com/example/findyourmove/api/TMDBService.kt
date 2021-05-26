@@ -4,6 +4,7 @@ import androidx.annotation.AttrRes
 import com.example.findyourmove.model.movie.SingleMovieModel
 import com.example.findyourmove.model.moviemodels.MovieResponse
 import com.example.findyourmove.model.trendingmodel.TrendingResponse
+import com.example.findyourmove.model.tvshow.TVShow
 import com.example.findyourmove.model.tvshowmodel.TvShowResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -86,6 +87,12 @@ interface TMDBService {
             @Path("movie_id") query: Int,
             @Query("api_key") api_key : String
     )  : Response<SingleMovieModel>
+
+    @GET(Constants.END_POINT_TV_SHOW_DETAILS)
+    suspend fun getTVShowDetails(
+        @Path("tv_id") query: Int,
+        @Query("api_key") api_key : String
+    ) : Response<TVShow>
 
 
 }

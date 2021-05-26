@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.findyourmove.model.movie.SingleMovieModel
 import com.example.findyourmove.model.moviemodels.MovieResponseItem
 import com.example.findyourmove.model.trendingmodel.TrendingItem
+import com.example.findyourmove.model.tvshow.TVShow
 import com.example.findyourmove.model.tvshowmodel.TVShowResponseItem
 import com.example.findyourmove.repository.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -67,6 +68,10 @@ constructor(private val repository: MainRepository) : ViewModel(){
     val movieDetails : LiveData<SingleMovieModel>
         get() = _movieDetails
 
+    private val _tvShowDetails = MutableLiveData<TVShow>()
+    val tvShowDetails : LiveData<TVShow>
+        get() = _tvShowDetails
+
 
 
 
@@ -80,11 +85,27 @@ constructor(private val repository: MainRepository) : ViewModel(){
         getUpComingMovies()
         getTrendingMovies()
         getPopularTVShows()
-
         getTopRatedTVShows()
         getTrendingTVShows()
 
 
+    }
+
+    fun getTVShowDetails(tv_id:Int){
+        viewModelScope.launch {
+            repository.getTVShowDetails(tv_id)
+                .let { response ->
+
+                    Log.d("TVShowDetails","TVShowDetailsResponse: ${response.raw().request.url}")
+                    if(response.isSuccessful)  {
+                        _tvShowDetails.postValue(response.body())
+                        Log.d("TVShowDetails","TVShowDetailsResponse: ${response.body()?.name}")
+                    } else{
+                        Log.d("TVShowDetails","TVShowDetailsResponse: ${response.errorBody().toString()}")
+                    }
+
+                }
+        }
     }
 
     fun getMovieDetailObject(movie_id:Int) {
@@ -273,7 +294,7 @@ constructor(private val repository: MainRepository) : ViewModel(){
 
     }
 
-    private fun getPopularMovies() =
+    private fun getPopularMovies() {
         viewModelScope.launch {
 
             Log.d("ViewModel", "inside ViewModelScope")
@@ -286,10 +307,6 @@ constructor(private val repository: MainRepository) : ViewModel(){
                     if (response.isSuccessful){
                         _popularMovieResponse.postValue(response.body()?.movieResponseItems)
 
-//                        response.body()?.movieResponseItems?.forEach { it ->
-//                            Log.d("TMDBResponse",it.title)
-//                        }
-
                     }else{
                         Log.d("TMDBResponse","error : ${response.errorBody().toString()}")
                     }
@@ -298,6 +315,8 @@ constructor(private val repository: MainRepository) : ViewModel(){
                 }
 
         }
+    }
+
 
 
 }

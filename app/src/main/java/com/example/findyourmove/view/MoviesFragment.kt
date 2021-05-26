@@ -171,27 +171,32 @@ class MoviesFragment : Fragment(), MovieAdapter.OnMovieClickListener,SearchAdapt
     }
 
     override fun onSearchItemClick(position: Int) {
-        Log.d("MovieClicked", "Clicked item : ${sharedViewModel.searchMovieResult.value?.get(position)?.title}")
-        navController.navigate(R.id.movieDetailsFragment)
+        Log.d("Home Screen", "Clicked item : ${sharedViewModel.searchMovieResult.value?.get(position)?.title}")
+        sharedViewModel.searchMovieResult.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
+        navController.navigate(com.example.findyourmove.R.id.movieDetailsFragment)
     }
 
     override fun onTrendingItemClick(position: Int) {
 
     }
 
-    override fun onUpcomingMovieClick(position: Int) {
-        Log.d("MovieClicked", "Clicked item : ${sharedViewModel.upComingMovieResponse.value?.get(position)?.title}")
-        navController.navigate(R.id.movieDetailsFragment)
+    override fun onPopularMovieClick(position: Int) {
+        Log.d("Home Screen", "Clicked item : ${sharedViewModel.popularMovieResponse.value?.get(position)?.title}")
+        sharedViewModel.popularMovieResponse.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
+        navController.navigate(com.example.findyourmove.R.id.movieDetailsFragment)
     }
 
     override fun onTrendingMovieClick(position: Int) {
-        Log.d("MovieClicked", "Clicked item : ${sharedViewModel.trendingMovieResponse.value?.get(position)?.title}")
-        navController.navigate(R.id.movieDetailsFragment)
+        Log.d("Home Screen", "Clicked item : ${sharedViewModel.trendingMovieResponse.value?.get(position)?.title}")
+        sharedViewModel.trendingMovieResponse.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
+        navController.navigate(com.example.findyourmove.R.id.movieDetailsFragment)
     }
 
-    override fun onPopularMovieClick(position: Int) {
-        Log.d("MovieClicked", "Clicked item : ${sharedViewModel.popularMovieResponse.value?.get(position)?.title}")
-        navController.navigate(R.id.movieDetailsFragment)
+    override fun onUpcomingMovieClick(position: Int) {
+        Log.d("Home Screen", "Clicked item : ${sharedViewModel.upComingMovieResponse.value?.get(position)?.title}")
+        sharedViewModel.upComingMovieResponse.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
+        navController.navigate(com.example.findyourmove.R.id.movieDetailsFragment)
     }
+
 
 }

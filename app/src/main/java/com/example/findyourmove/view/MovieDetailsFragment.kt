@@ -8,7 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import coil.load
+import com.example.findyourmove.adapters.MovieAdapter
+import com.example.findyourmove.adapters.SearchAdapter
 import com.example.findyourmove.api.Constants
 import com.example.findyourmove.databinding.FragmentMovieDetailsBinding
 import com.example.findyourmove.viewmodels.MainViewModel
@@ -16,6 +20,7 @@ import com.example.findyourmove.viewmodels.MainViewModel
 
 class MovieDetailsFragment : Fragment() {
     private lateinit var binding: FragmentMovieDetailsBinding
+    private lateinit var navController: NavController
     private val sharedViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -30,6 +35,7 @@ class MovieDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
         getDetails()
     }
 
@@ -58,6 +64,9 @@ class MovieDetailsFragment : Fragment() {
         })
 
     }
+
+
+
 
 
 }

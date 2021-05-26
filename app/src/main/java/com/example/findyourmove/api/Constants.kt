@@ -15,6 +15,7 @@ object Constants {
     const val END_POINT_SEARCH_MOVIE = "3/search/movie"
     const val END_POINT_SEARCH_TV = "3/search/tv"
     const val END_POINT_MOVIE_DETAILS = "3/movie/{movie_id}"
+    const val END_POINT_TV_SHOW_DETAILS = "3/tv/{tv_id}"
     const val IMG_BASE_URL = "https://image.tmdb.org/t/p/w500"
 
 

@@ -202,13 +202,25 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
     override fun onPopularShowClick(position: Int) {
 
         Log.d("Home Screen", "Clicked item : ${sharedViewModel.popularTVResponse.value?.get(position)?.name}")
-        val bundle = bundleOf("id" to sharedViewModel.popularTVResponse.value?.get(position)?.name )
-        navController.navigate(R.id.showDetailsFragment,bundle)
+        sharedViewModel.popularTVResponse.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
+        navController.navigate(R.id.showDetailsFragment)
 
 
     }
 
     override fun onSearchItemClick(position: Int) {
+
+        Log.d("Home Screen", "Clicked item : ${sharedViewModel.searchAllResult.value?.get(position)?.mediaType}")
+
+        if(sharedViewModel.trendingMedia.value?.get(position)?.mediaType == "movie"){
+            Log.d("Home Screen", "Clicked movie item : ${sharedViewModel.searchAllResult.value?.get(position)?.title}")
+            sharedViewModel.searchAllResult.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
+            navController.navigate(R.id.movieDetailsFragment)
+        }else{
+            Log.d("Home Screen", "Clicked TV item : ${sharedViewModel.searchAllResult.value?.get(position)?.name}")
+            sharedViewModel.searchAllResult.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
+            navController.navigate(R.id.showDetailsFragment)
+        }
 
     }
 
@@ -217,11 +229,13 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
         Log.d("Home Screen", "Clicked item : ${sharedViewModel.trendingMedia.value?.get(position)?.mediaType}")
 
         if(sharedViewModel.trendingMedia.value?.get(position)?.mediaType == "movie"){
-            val bundle = bundleOf("id" to sharedViewModel.trendingMedia.value?.get(position)?.title )
-            navController.navigate(R.id.movieDetailsFragment,bundle)
+            Log.d("Home Screen", "Clicked item : ${sharedViewModel.trendingMedia.value?.get(position)?.title}")
+            sharedViewModel.trendingMedia.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
+            navController.navigate(R.id.movieDetailsFragment)
         }else{
-            val bundle = bundleOf("id" to sharedViewModel.trendingMedia.value?.get(position)?.name )
-            navController.navigate(R.id.showDetailsFragment,bundle)
+            Log.d("Home Screen", "Clicked item : ${sharedViewModel.trendingMedia.value?.get(position)?.name}")
+            sharedViewModel.trendingMedia.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
+            navController.navigate(R.id.showDetailsFragment)
         }
 
 

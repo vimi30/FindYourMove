@@ -19,7 +19,7 @@ import com.example.findyourmove.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TvFragment : Fragment(), TVShowAdapter.OnShowClickListener, SearchAdapter.OnSearchResultItemClick/*,PopularShowAdapter.OnPopularShowClickListener,SearchAdapter.OnSearchResultItemClick, TrendingShowAdapter.OnTrendingShowListener,TopRatedShowAdapter.OnTopRatedShowClickListener */{
+class TvFragment : Fragment(), TVShowAdapter.OnShowClickListener, SearchAdapter.OnSearchResultItemClick{
 
     private lateinit var binding: FragmentTvBinding
     private val sharedViewModel: MainViewModel by activityViewModels()
@@ -169,21 +169,25 @@ class TvFragment : Fragment(), TVShowAdapter.OnShowClickListener, SearchAdapter.
 
     override fun onTrendingShowClick(position: Int) {
         Log.d("ShowClicked", "Clicked item : ${sharedViewModel.trendingTVResponse.value?.get(position)?.name}")
+        sharedViewModel.trendingTVResponse.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
         navController.navigate(R.id.showDetailsFragment)
     }
 
     override fun onTopRatedShowClick(position: Int) {
         Log.d("ShowClicked", "Clicked item : ${sharedViewModel.topRatedTVResponse.value?.get(position)?.name}")
+        sharedViewModel.topRatedTVResponse.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
         navController.navigate(R.id.showDetailsFragment)
     }
 
     override fun onPopularShowClick(position: Int) {
         Log.d("ShowClicked", "Clicked item : ${sharedViewModel.popularTVResponse.value?.get(position)?.name}")
+        sharedViewModel.popularTVResponse.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
         navController.navigate(R.id.showDetailsFragment)
     }
 
     override fun onSearchItemClick(position: Int) {
         Log.d("ShowClicked", "Clicked item : ${sharedViewModel.searchTvResult.value?.get(position)?.name}")
+        sharedViewModel.searchTvResult.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(position) }
         navController.navigate(R.id.showDetailsFragment)
     }
 
