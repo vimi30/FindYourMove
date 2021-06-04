@@ -12,12 +12,12 @@ import com.example.findyourmove.databinding.MovieItemBinding
 import com.example.findyourmove.databinding.SearchItemBinding
 import com.example.findyourmove.model.trendingmodel.TrendingItem
 
-class SearchAdapter(private val searchResultClickListener: OnSearchResultItemClick,private val listType : String) :
+class TrendingAllAdapter(private val searchResultClickListener: OnSearchResultItemClick, private val listType : String) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class MySearchHolder(val binding: SearchItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
         override fun onClick(v: View?) {
-            searchResultClickListener.onSearchItemClick(adapterPosition)
+            searchResultClickListener.onSearchItemClick(absoluteAdapterPosition)
         }
 
         init {
@@ -27,7 +27,7 @@ class SearchAdapter(private val searchResultClickListener: OnSearchResultItemCli
 
     inner class MyTrendingMediaHolder(val binding: MovieItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
         override fun onClick(v: View?) {
-            searchResultClickListener.onTrendingItemClick(adapterPosition)
+            searchResultClickListener.onTrendingItemClick(absoluteAdapterPosition)
         }
 
         init {
@@ -53,53 +53,12 @@ class SearchAdapter(private val searchResultClickListener: OnSearchResultItemCli
             differ.submitList(value)
         }
 
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MySearchHolder {
-//        return MySearchHolder(SearchItemBinding.inflate(LayoutInflater.from(parent.context),parent,false))
-//    }
-//
-//    override fun onBindViewHolder(holder: MySearchHolder, position: Int) {
-//        var currentItem = searchList[position]
-//
-//        holder.binding.apply {
-//            ivPoster.load(Constants.IMG_BASE_URL+currentItem.backdropPath){
-//                crossfade(true)
-//                crossfade(1000)
-//            }
-//
-//            if(currentItem.name.isNullOrEmpty()){
-//                contentTitle.text = currentItem.title
-//            }else{
-//                contentTitle.text = currentItem.name
-//            }
-//
-//            if(currentItem.releaseDate!=null && currentItem.releaseDate.length>4){
-//                releaseYear.text = currentItem.releaseDate.subSequence(0,4)
-//            }else{
-//
-//                if(currentItem.firstAirDate!=null && currentItem.firstAirDate.length>4 ){
-//                    releaseYear.text = currentItem.firstAirDate.subSequence(0,4)
-//                }
-//
-//            }
-//
-//            ratingBar.rating = (currentItem.voteAverage/2).toFloat()
-//
-//        }
-//
-//
-//    }
-//
-//    override fun getItemCount(): Int {
-//        return searchList.size
-//    }
-//
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
-        if(listType==Constants.SEARCH){
-            return MySearchHolder(SearchItemBinding.inflate(LayoutInflater.from(parent.context),parent,false))
+        return if(listType==Constants.SEARCH){
+            MySearchHolder(SearchItemBinding.inflate(LayoutInflater.from(parent.context),parent,false))
         }else{
-         return return MyTrendingMediaHolder(MovieItemBinding.inflate(LayoutInflater.from(parent.context),parent,false))
+            MyTrendingMediaHolder(MovieItemBinding.inflate(LayoutInflater.from(parent.context),parent,false))
         }
 
     }
@@ -111,11 +70,14 @@ class SearchAdapter(private val searchResultClickListener: OnSearchResultItemCli
         if(listType==Constants.SEARCH){
             holder as MySearchHolder
             holder.binding.apply {
-            ivPoster.load(Constants.IMG_BASE_URL+currentItem.backdropPath){
-                crossfade(true)
-                crossfade(1000)
-            }
 
+                if(!currentItem.backdropPath.isNullOrEmpty()){
+                    ivPoster.load(Constants.IMG_BASE_URL+currentItem.backdropPath){
+                        crossfade(true)
+                        crossfade(1000)
+                    }
+                }
+                
             if(currentItem.name.isNullOrEmpty()){
                 contentTitle.text = currentItem.title
             }else{

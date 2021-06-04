@@ -18,20 +18,19 @@ import com.example.findyourmove.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MoviesFragment : Fragment(), MovieAdapter.OnMovieClickListener,SearchAdapter.OnSearchResultItemClick{
+class MoviesFragment : Fragment(), MovieAdapter.OnMovieClickListener{
 
     private lateinit var binding: FragmentMoviesBinding
     private val sharedViewModel: MainViewModel by activityViewModels()
     private lateinit var popularMovieAdapter: MovieAdapter
     private lateinit var upcomingMovieAdapter: MovieAdapter
     private lateinit var trendingMovieAdapter: MovieAdapter
-    private lateinit var searchResultAdapter: SearchAdapter
     private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentMoviesBinding.inflate(layoutInflater)
         return binding.root
@@ -41,31 +40,11 @@ class MoviesFragment : Fragment(), MovieAdapter.OnMovieClickListener,SearchAdapt
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
+
         setUpTrendingMovieRecyclerView()
         setUpPopularMovieRecyclerView()
         setUpUpComingMovieRecyclerView()
-
-        setUpUpSearchResultRecyclerView()
-
         setUpSearchBar()
-
-    }
-
-    private fun setUpUpSearchResultRecyclerView() {
-
-        searchResultAdapter = SearchAdapter(this,Constants.SEARCH)
-        binding.searchRecyclerView.apply {
-            adapter = searchResultAdapter
-            layoutManager = LinearLayoutManager(context)
-            //setHasFixedSize(true)
-        }
-
-        sharedViewModel.searchMovieResult.observe(viewLifecycleOwner, { listOfItems ->
-            searchResultAdapter.searchList = listOfItems
-
-            Log.v("HomeSearch","search list: ${searchResultAdapter.searchList.toString()}")
-
-        })
 
     }
 
@@ -81,16 +60,12 @@ class MoviesFragment : Fragment(), MovieAdapter.OnMovieClickListener,SearchAdapt
         }
 
         sharedViewModel.upComingMovieResponse.observe(viewLifecycleOwner, { listOfMovies ->
-
             upcomingMovieAdapter.movieList = listOfMovies
-
-//            Log.d("MovieFrag","Upcoming:  $listOfMovies ")
 
         })
     }
 
     private fun setUpTrendingMovieRecyclerView() {
-
         trendingMovieAdapter = MovieAdapter(this,Constants.TRENDING)
         binding.rvTrendingMovies.apply {
             adapter = trendingMovieAdapter
@@ -100,19 +75,13 @@ class MoviesFragment : Fragment(), MovieAdapter.OnMovieClickListener,SearchAdapt
                     false)
             setHasFixedSize(true)
         }
-
         sharedViewModel.trendingMovieResponse.observe(viewLifecycleOwner, { listOfMovies ->
-
             trendingMovieAdapter.movieList = listOfMovies
-
-//            Log.d("MovieFrag","Trending:  $listOfMovies ")
-
         })
 
     }
 
     private fun setUpPopularMovieRecyclerView() {
-
         popularMovieAdapter = MovieAdapter(this,Constants.POPULAR)
         binding.rvPopularMovies.apply {
             adapter = popularMovieAdapter
@@ -122,80 +91,55 @@ class MoviesFragment : Fragment(), MovieAdapter.OnMovieClickListener,SearchAdapt
                     false)
             setHasFixedSize(true)
         }
-
         sharedViewModel.popularMovieResponse.observe(viewLifecycleOwner, { listOfMovies ->
-
             popularMovieAdapter.movieList = listOfMovies
-
-//            Log.d("MovieFrag","Popular:  $listOfMovies ")
-
         })
 
     }
 
     private fun setUpSearchBar() {
-
         binding.svSearchBar.apply {
-
             setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String?): Boolean {
-                    binding.searchRecyclerView.visibility = View.VISIBLE
-                    binding.linearLayout.visibility = View.GONE
-                    binding.linearLayout2.visibility = View.GONE
-                    binding.linearLayout1.visibility = View.GONE
-
                     if (query != null) {
                         sharedViewModel.getSearchMovieResults(query)
+                        val action = MoviesFragmentDirections.actionMoviesFragmentToSearchFragment(query,Constants.MOVIES)
+                        navController.navigate(action)
                     }
-
                     return false
                 }
-
                 override fun onQueryTextChange(newText: String?): Boolean {
                     return false
                 }
-
             })
-
-            setOnCloseListener {
-                binding.searchRecyclerView.visibility = View.GONE
-                binding.linearLayout.visibility = View.VISIBLE
-                binding.linearLayout2.visibility = View.VISIBLE
-                binding.linearLayout1.visibility = View.VISIBLE
-                false
-            }
-
         }
-
-
-    }
-
-    override fun onSearchItemClick(position: Int) {
-        Log.d("Home Screen", "Clicked item : ${sharedViewModel.searchMovieResult.value?.get(position)?.title}")
-        sharedViewModel.searchMovieResult.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
-        navController.navigate(com.example.findyourmove.R.id.movieDetailsFragment)
-    }
-
-    override fun onTrendingItemClick(position: Int) {
-
     }
 
     override fun onPopularMovieClick(position: Int) {
         Log.d("Home Screen", "Clicked item : ${sharedViewModel.popularMovieResponse.value?.get(position)?.title}")
-        sharedViewModel.popularMovieResponse.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
-        navController.navigate(com.example.findyourmove.R.id.movieDetailsFragment)
+        sharedViewModel.popularMovieResponse.value?.get(position)?.id?.let {
+            sharedViewModel.getMovieDetailObject(it)
+            sharedViewModel.getMovieCredit(it)
+        }
+        navController.navigate(R.id.movieDetailsFragment)
     }
 
     override fun onTrendingMovieClick(position: Int) {
         Log.d("Home Screen", "Clicked item : ${sharedViewModel.trendingMovieResponse.value?.get(position)?.title}")
-        sharedViewModel.trendingMovieResponse.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
-        navController.navigate(com.example.findyourmove.R.id.movieDetailsFragment)
+        sharedViewModel.trendingMovieResponse.value?.get(position)?.id?.let {
+            sharedViewModel.getMovieDetailObject(it)
+            sharedViewModel.getMovieCredit(it)
+        }
+        navController.navigate(R.id.movieDetailsFragment)
     }
 
     override fun onUpcomingMovieClick(position: Int) {
         Log.d("Home Screen", "Clicked item : ${sharedViewModel.upComingMovieResponse.value?.get(position)?.title}")
-        sharedViewModel.upComingMovieResponse.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
-        navController.navigate(com.example.findyourmove.R.id.movieDetailsFragment)
+        sharedViewModel.upComingMovieResponse.value?.get(position)?.id?.let {
+            sharedViewModel.getMovieDetailObject(it)
+            sharedViewModel.getMovieCredit(it)
+        }
+        navController.navigate(R.id.movieDetailsFragment)
     }
 
 

@@ -5,6 +5,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.example.findyourmove.adapters.SearchPagingDataSource
+import com.example.findyourmove.api.Constants
+import com.example.findyourmove.api.TMDBService
+import com.example.findyourmove.model.credit.Cast
+import com.example.findyourmove.model.credit.Crew
 import com.example.findyourmove.model.movie.SingleMovieModel
 import com.example.findyourmove.model.moviemodels.MovieResponseItem
 import com.example.findyourmove.model.trendingmodel.TrendingItem
@@ -12,6 +21,7 @@ import com.example.findyourmove.model.tvshow.TVShow
 import com.example.findyourmove.model.tvshowmodel.TVShowResponseItem
 import com.example.findyourmove.repository.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,6 +30,12 @@ import javax.inject.Inject
 class MainViewModel
 @Inject
 constructor(private val repository: MainRepository) : ViewModel(){
+
+    @Inject lateinit var tmdbService: TMDBService
+    private var searchPageNumber : Int = 0
+    lateinit var searchAllQuery : String
+
+    var testPagingList : Flow<PagingData<TrendingItem>>? = null
 
     private val _popularMovieResponse = MutableLiveData<List<MovieResponseItem>>()
     val popularMovieResponse : LiveData<List<MovieResponseItem>>
@@ -32,6 +48,14 @@ constructor(private val repository: MainRepository) : ViewModel(){
     private val _upComingMovieResponse = MutableLiveData<List<MovieResponseItem>>()
     val upComingMovieResponse : LiveData<List<MovieResponseItem>>
         get() = _upComingMovieResponse
+
+    private val _movieCast = MutableLiveData<List<Cast>>()
+    val movieCast: LiveData<List<Cast>>
+        get() = _movieCast
+
+    private val _movieCrew = MutableLiveData<List<Crew>>()
+    val movieCrew: LiveData<List<Crew>>
+        get() = _movieCrew
 
 
 
@@ -52,16 +76,17 @@ constructor(private val repository: MainRepository) : ViewModel(){
     val trendingMedia : LiveData<List<TrendingItem>>
         get() = _trendingMedia
 
-    private val _searchAllResults = MutableLiveData<List<TrendingItem>>()
-    val searchAllResult : LiveData<List<TrendingItem>>
+
+    private val _searchAllResults = MutableLiveData<MutableList<TrendingItem>>()
+    val searchAllResult : LiveData<MutableList<TrendingItem>>
         get() = _searchAllResults
 
-    private val _searchMovieResults = MutableLiveData<List<TrendingItem>>()
-    val searchMovieResult : LiveData<List<TrendingItem>>
+    private val _searchMovieResults = MutableLiveData<MutableList<TrendingItem>>()
+    val searchMovieResult : LiveData<MutableList<TrendingItem>>
         get() = _searchMovieResults
 
-    private val _searchTvResults = MutableLiveData<List<TrendingItem>>()
-    val searchTvResult : LiveData<List<TrendingItem>>
+    private val _searchTvResults = MutableLiveData<MutableList<TrendingItem>>()
+    val searchTvResult : LiveData<MutableList<TrendingItem>>
         get() = _searchTvResults
 
     private val _movieDetails = MutableLiveData<SingleMovieModel>()
@@ -125,65 +150,120 @@ constructor(private val repository: MainRepository) : ViewModel(){
         }
     }
 
-    fun getSearchAllResults( query:String ) {
+//    fun getSearchAllResults( query:String,pageNumber:Int ) {
+//
+//        searchAllQuery = query
+//        searchPageNumber = pageNumber
+//
+//        Log.d("TMDBResponse","Search request for page number $pageNumber")
+//
+//        viewModelScope.launch {
+//
+//            repository.getSearchAllResult(query,pageNumber)
+//                .let { response ->
+//
+//                    Log.d("TMDBResponse","Search URL: ${response.raw().request.url}")
+//                    if(response.isSuccessful){
+////                        val list  = response.body()?.trendingItems
+//                        if(pageNumber == 1){
+//                            _searchAllResults.postValue(response.body()?.trendingItems)
+//                        }else{
+//                            val oldPage = _searchAllResults.value
+//                            val newPage = response.body()?.trendingItems
+//                            if (newPage != null) {
+//                                oldPage?.addAll(newPage)
+//                            }
+//
+//                            Log.d("TMDBResponse","OLD_PAGE: Size: ${oldPage?.size}, value: ${oldPage.toString()}")
+//
+//                            _searchAllResults.postValue(newPage)
+////
+//                        }
+//
+//                        Log.d("TMDBResponse","SearchResponse size: ${_searchAllResults.value?.size}")
+//                    }else{
+//                        Log.d("TMDBResponse","Error: ${response.errorBody().toString()}")
+//                    }
+//
+//                }
+//
+//        }
+//
+//    }
 
+    fun getMovieCredit(movie_id: Int){
         viewModelScope.launch {
 
-            repository.getSearchAllResult(query)
+            repository.getMovieCredits(movie_id)
                 .let { response ->
 
-                    if(response.isSuccessful){
-                        _searchAllResults.postValue(response.body()?.trendingItems)
-                        Log.d("TMDBResponse","SearchResponse: ${response.body()?.trendingItems.toString()}")
-                    }else{
-                        Log.d("TMDBResponse","Error: ${response.errorBody().toString()}")
-                    }
+                if(response.isSuccessful){
+                    _movieCast.postValue(response.body()?.cast)
+                    _movieCrew.postValue(response.body()?.crew)
+                    Log.d("TMDBResponse","SearchResponse: ${response.body()?.cast.toString()}")
+                }else{
+                    Log.d("TMDBResponse","SearchResponse: ${response.errorBody()}")
+                }
+
 
                 }
 
         }
-
     }
 
-    fun getSearchMovieResults( query:String ) {
+//    fun getNextPageSearchResult(option: Int){
+//        searchPageNumber += 1
+//        when(option){
+//            1->getSearchAllResults(searchAllQuery,searchPageNumber)
+//            2->getSearchMovieResults( searchAllQuery,searchPageNumber )
+//            3->getSearchTvResults(searchAllQuery,searchPageNumber)
+//        }
+//
+//    }
 
-        viewModelScope.launch {
+//    fun getSearchMovieResults( query:String,pageNumber: Int ) {
+//
+//        searchAllQuery = query
+//        searchPageNumber = pageNumber
+//
+//        viewModelScope.launch {
+//
+//            repository.getSearchMovieResult(query,pageNumber)
+//                .let { response ->
+//
+//                    if(response.isSuccessful){
+//                        _searchMovieResults.postValue(response.body()?.trendingItems)
+//                        Log.d("TMDBResponse","SearchResponse: ${response.body()?.trendingItems.toString()}")
+//                    }else{
+//                        Log.d("TMDBResponse","Error: ${response.errorBody().toString()}")
+//                    }
+//
+//                }
+//
+//        }
+//
+//    }
 
-            repository.getSearchMovieResult(query)
-                .let { response ->
 
-                    if(response.isSuccessful){
-                        _searchMovieResults.postValue(response.body()?.trendingItems)
-                        Log.d("TMDBResponse","SearchResponse: ${response.body()?.trendingItems.toString()}")
-                    }else{
-                        Log.d("TMDBResponse","Error: ${response.errorBody().toString()}")
-                    }
-
-                }
-
-        }
-
-    }
-
-    fun getSearchTvResults( query:String ) {
-
-        viewModelScope.launch {
-
-            repository.getSearchTvResult(query)
-                .let { response ->
-
-                    if(response.isSuccessful){
-                        _searchTvResults.postValue(response.body()?.trendingItems)
-                        Log.d("TMDBResponse","SearchResponse: ${response.body()?.trendingItems.toString()}")
-                    }else{
-                        Log.d("TMDBResponse","Error: ${response.errorBody().toString()}")
-                    }
-
-                }
-
-        }
-
-    }
+//    fun getSearchTvResults( query:String,pageNumber: Int ) {
+//
+//        viewModelScope.launch {
+//
+//            repository.getSearchTvResult(query,pageNumber)
+//                .let { response ->
+//
+//                    if(response.isSuccessful){
+//                        _searchTvResults.postValue(response.body()?.trendingItems)
+//                        Log.d("TMDBResponse","SearchResponse: ${response.body()?.trendingItems.toString()}")
+//                    }else{
+//                        Log.d("TMDBResponse","Error: ${response.errorBody().toString()}")
+//                    }
+//
+//                }
+//
+//        }
+//
+//    }
 
     private fun getTrendingMedia() {
 
@@ -318,5 +398,22 @@ constructor(private val repository: MainRepository) : ViewModel(){
     }
 
 
+    fun getSearchAllResults(query: String){
+        testPagingList = Pager(PagingConfig(pageSize = 20)){
+            SearchPagingDataSource(tmdbService,query,Constants.ALL)
+        }.flow.cachedIn(viewModelScope)
+    }
+
+    fun getSearchMovieResults(query: String){
+        testPagingList = Pager(PagingConfig(pageSize = 20)){
+            SearchPagingDataSource(tmdbService,query,Constants.MOVIES)
+        }.flow.cachedIn(viewModelScope)
+    }
+
+    fun getSearchTvResults(query: String){
+        testPagingList = Pager(PagingConfig(pageSize = 20)){
+            SearchPagingDataSource(tmdbService,query,Constants.TV)
+        }.flow.cachedIn(viewModelScope)
+    }
 
 }

@@ -3,6 +3,8 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+    id 'androidx.navigation.safeargs.kotlin'
+
 }
 
 android {
@@ -79,5 +81,9 @@ dependencies {
 
     //material
     implementation("com.google.android.material:material:1.4.0-beta01")
+
+    //paging
+    implementation "androidx.paging:paging-runtime-ktx:3.0.0"
+
 
 }

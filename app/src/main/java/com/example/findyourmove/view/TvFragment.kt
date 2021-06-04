@@ -1,7 +1,6 @@
 package com.example.findyourmove.view
 
 import android.os.Bundle
-import android.provider.SyncStateContract
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,7 +18,7 @@ import com.example.findyourmove.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TvFragment : Fragment(), TVShowAdapter.OnShowClickListener, SearchAdapter.OnSearchResultItemClick{
+class TvFragment : Fragment(), TVShowAdapter.OnShowClickListener{
 
     private lateinit var binding: FragmentTvBinding
     private val sharedViewModel: MainViewModel by activityViewModels()
@@ -27,13 +26,12 @@ class TvFragment : Fragment(), TVShowAdapter.OnShowClickListener, SearchAdapter.
     private lateinit var popularShowAdapter : TVShowAdapter
     private lateinit var trendingShowAdapter : TVShowAdapter
     private lateinit var topRatedShowAdapter : TVShowAdapter
-    private lateinit var searchResultAdapter: SearchAdapter
     private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentTvBinding.inflate(inflater)
         return binding.root
@@ -44,33 +42,9 @@ class TvFragment : Fragment(), TVShowAdapter.OnShowClickListener, SearchAdapter.
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
         setUpPopularShowRecyclerView()
-
         setUpTopRatedShowRecyclerView()
-
         setUpTrendingShowRecyclerView()
-
-        setUpSearchResultRecyclerView()
-
         setUpSearchBar()
-
-    }
-
-    private fun setUpSearchResultRecyclerView() {
-
-        searchResultAdapter = SearchAdapter(this,Constants.SEARCH)
-        binding.searchRecyclerView.apply {
-            adapter = searchResultAdapter
-            layoutManager = LinearLayoutManager(context)
-            //setHasFixedSize(true)
-        }
-
-        sharedViewModel.searchTvResult.observe(viewLifecycleOwner, { listOfItems ->
-            searchResultAdapter.searchList = listOfItems
-
-            Log.v("HomeSearch","search list: ${searchResultAdapter.searchList.toString()}")
-
-        })
-
     }
 
     private fun setUpTrendingShowRecyclerView() {
@@ -133,38 +107,21 @@ class TvFragment : Fragment(), TVShowAdapter.OnShowClickListener, SearchAdapter.
     private fun setUpSearchBar() {
 
         binding.svSearchBar.apply {
-
             setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String?): Boolean {
-                    binding.searchRecyclerView.visibility = View.VISIBLE
-                    binding.linearLayout.visibility = View.GONE
-                    binding.linearLayout2.visibility = View.GONE
-                    binding.linearLayout1.visibility = View.GONE
-
                     if (query != null) {
                         sharedViewModel.getSearchTvResults(query)
+                        val action = TvFragmentDirections.actionTvFragmentToSearchFragment(query,Constants.TV)
+                        navController.navigate(action)
                     }
-
                     return false
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     return false
                 }
-
             })
-
-            setOnCloseListener {
-                binding.searchRecyclerView.visibility = View.GONE
-                binding.linearLayout.visibility = View.VISIBLE
-                binding.linearLayout2.visibility = View.VISIBLE
-                binding.linearLayout1.visibility = View.VISIBLE
-                false
-            }
-
         }
-
-
     }
 
     override fun onTrendingShowClick(position: Int) {
@@ -184,16 +141,4 @@ class TvFragment : Fragment(), TVShowAdapter.OnShowClickListener, SearchAdapter.
         sharedViewModel.popularTVResponse.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
         navController.navigate(R.id.showDetailsFragment)
     }
-
-    override fun onSearchItemClick(position: Int) {
-        Log.d("ShowClicked", "Clicked item : ${sharedViewModel.searchTvResult.value?.get(position)?.name}")
-        sharedViewModel.searchTvResult.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(position) }
-        navController.navigate(R.id.showDetailsFragment)
-    }
-
-    override fun onTrendingItemClick(position: Int) {
-
-    }
-
-
 }

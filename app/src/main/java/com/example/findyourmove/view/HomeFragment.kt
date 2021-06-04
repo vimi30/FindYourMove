@@ -6,35 +6,35 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.findyourmove.R
 import com.example.findyourmove.adapters.MovieAdapter
-import com.example.findyourmove.adapters.SearchAdapter
+import com.example.findyourmove.adapters.TrendingAllAdapter
 import com.example.findyourmove.adapters.TVShowAdapter
 import com.example.findyourmove.api.Constants
 import com.example.findyourmove.databinding.FragmentHomeBinding
+import com.example.findyourmove.model.trendingmodel.TrendingItem
 import com.example.findyourmove.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.OnShowClickListener,SearchAdapter.OnSearchResultItemClick {
+class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.OnShowClickListener,TrendingAllAdapter.OnSearchResultItemClick {
 
     private lateinit var binding: FragmentHomeBinding
     private val sharedViewModel: MainViewModel by activityViewModels()
     private lateinit var popularMovieAdapter: MovieAdapter
     private lateinit var popularShowAdapter: TVShowAdapter
-    private lateinit var trendingAdapter: SearchAdapter
+    private lateinit var trendingAdapter: TrendingAllAdapter
     private lateinit var navController : NavController
-    private lateinit var searchAdapter: SearchAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(layoutInflater)
         return binding.root
@@ -54,28 +54,31 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
 
         setUpSearchBar()
 
-        setUpSearchRv()
+//        setUpSearchRv()
 
 
 
     }
 
-    private fun setUpSearchRv() {
-
-        searchAdapter = SearchAdapter(this,Constants.SEARCH)
-        binding.searchRecyclerView.apply {
-            adapter = searchAdapter
-            layoutManager = LinearLayoutManager(context)
-            //setHasFixedSize(true)
-        }
-
-        sharedViewModel.searchAllResult.observe(viewLifecycleOwner, { listOfItems ->
-            searchAdapter.searchList = listOfItems
-
-            Log.v("HomeSearch","search list: ${searchAdapter.searchList.toString()}")
-
-        })
-    }
+//    private fun setUpSearchRv() {
+//
+//        searchAdapter = SearchAdapter(this,Constants.SEARCH)
+//        binding.searchRecyclerView.apply {
+//            adapter = searchAdapter
+//            layoutManager = LinearLayoutManager(context)
+//            addOnScrollListener(object : RecyclerView.OnScrollListener(){
+//                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                    if(!recyclerView.canScrollVertically(1)){
+//                        sharedViewModel.getNextPageSearchResult(1)
+//                    }
+//                }
+//            })
+//        }
+//
+//        sharedViewModel.searchAllResult.observe(viewLifecycleOwner, { listOfItems ->
+//            searchAdapter.searchList = listOfItems
+//        })
+//    }
 
     private fun setUpSearchBar() {
 
@@ -83,14 +86,12 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
 
             setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String?): Boolean {
-                    binding.searchRecyclerView.visibility = View.VISIBLE
-                    binding.linearLayout.visibility = View.GONE
-                    binding.linearLayout2.visibility = View.GONE
-                    binding.linearLayout1.visibility = View.GONE
-
                     if (query != null) {
                         sharedViewModel.getSearchAllResults(query)
+                        val action = HomeFragmentDirections.actionHomeFragmentToSearchFragment(query,Constants.ALL)
+                        navController.navigate(action)
                     }
+
 
                     return false
                 }
@@ -100,15 +101,6 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
                 }
 
             })
-
-            setOnCloseListener {
-                binding.searchRecyclerView.visibility = View.GONE
-                binding.linearLayout.visibility = View.VISIBLE
-                binding.linearLayout2.visibility = View.VISIBLE
-                binding.linearLayout1.visibility = View.VISIBLE
-                false
-            }
-
         }
 
 
@@ -116,7 +108,7 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
 
     private fun setUpTrendingMediaRecyclerView() {
 
-        trendingAdapter = SearchAdapter(this,Constants.TRENDING_MEDIA)
+        trendingAdapter = TrendingAllAdapter(this,Constants.TRENDING_MEDIA)
         binding.trendingRv.apply {
 
             adapter = trendingAdapter
@@ -127,7 +119,7 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
 
         sharedViewModel.trendingMedia.observe(viewLifecycleOwner, { listOfMedia ->
 
-            trendingAdapter.searchList = listOfMedia
+            trendingAdapter.searchList = listOfMedia as MutableList<TrendingItem>
 
         })
 
@@ -177,7 +169,10 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
     override fun onPopularMovieClick(position: Int) {
 
         Log.d("Home Screen", "Clicked item : ${sharedViewModel.popularMovieResponse.value?.get(position)?.title}")
-        sharedViewModel.popularMovieResponse.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
+        sharedViewModel.popularMovieResponse.value?.get(position)?.id?.let {
+            sharedViewModel.getMovieDetailObject(it)
+            sharedViewModel.getMovieCredit(it)
+        }
         navController.navigate(R.id.movieDetailsFragment)
 
     }
@@ -214,7 +209,10 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
 
         if(sharedViewModel.trendingMedia.value?.get(position)?.mediaType == "movie"){
             Log.d("Home Screen", "Clicked movie item : ${sharedViewModel.searchAllResult.value?.get(position)?.title}")
-            sharedViewModel.searchAllResult.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
+            sharedViewModel.searchAllResult.value?.get(position)?.id?.let {
+                sharedViewModel.getMovieDetailObject(it)
+                sharedViewModel.getMovieCredit(it)
+            }
             navController.navigate(R.id.movieDetailsFragment)
         }else{
             Log.d("Home Screen", "Clicked TV item : ${sharedViewModel.searchAllResult.value?.get(position)?.name}")
@@ -230,7 +228,10 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
 
         if(sharedViewModel.trendingMedia.value?.get(position)?.mediaType == "movie"){
             Log.d("Home Screen", "Clicked item : ${sharedViewModel.trendingMedia.value?.get(position)?.title}")
-            sharedViewModel.trendingMedia.value?.get(position)?.id?.let { sharedViewModel.getMovieDetailObject(it) }
+            sharedViewModel.trendingMedia.value?.get(position)?.id?.let {
+                sharedViewModel.getMovieDetailObject(it)
+                sharedViewModel.getMovieCredit(it)
+            }
             navController.navigate(R.id.movieDetailsFragment)
         }else{
             Log.d("Home Screen", "Clicked item : ${sharedViewModel.trendingMedia.value?.get(position)?.name}")

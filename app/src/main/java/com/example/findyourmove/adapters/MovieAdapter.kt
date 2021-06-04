@@ -17,7 +17,7 @@ class MovieAdapter(private val listener: OnMovieClickListener, private val listT
     inner class MyPopularMovieHolder(val binding: MovieItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
 
         override fun onClick(v: View?) {
-            listener.onPopularMovieClick(adapterPosition)
+            listener.onPopularMovieClick(absoluteAdapterPosition)
         }
 
         init {
@@ -30,7 +30,7 @@ class MovieAdapter(private val listener: OnMovieClickListener, private val listT
     inner class MyTrendingMovieHolder(val binding: MovieItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
 
         override fun onClick(v: View?) {
-            listener.onTrendingMovieClick(adapterPosition)
+            listener.onTrendingMovieClick(absoluteAdapterPosition)
         }
 
         init {
@@ -43,7 +43,7 @@ class MovieAdapter(private val listener: OnMovieClickListener, private val listT
     inner class MyUpcomingMovieHolder(val binding: MovieItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
 
         override fun onClick(v: View?) {
-            listener.onUpcomingMovieClick(adapterPosition)
+            listener.onUpcomingMovieClick(absoluteAdapterPosition)
         }
 
         init {

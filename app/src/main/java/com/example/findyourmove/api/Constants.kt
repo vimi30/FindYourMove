@@ -16,7 +16,9 @@ object Constants {
     const val END_POINT_SEARCH_TV = "3/search/tv"
     const val END_POINT_MOVIE_DETAILS = "3/movie/{movie_id}"
     const val END_POINT_TV_SHOW_DETAILS = "3/tv/{tv_id}"
+    const val END_POINT_CREDITS = "3/movie/{movie_id}/credits"
     const val IMG_BASE_URL = "https://image.tmdb.org/t/p/w500"
+
 
 
     const val POPULAR = "POPULAR"
@@ -24,6 +26,9 @@ object Constants {
     const val TOP_RATED = "TOP_RATED"
     const val UPCOMING = "UPCOMING"
     const val SEARCH = "SEARCH"
+    const val ALL = "ALL"
+    const val MOVIES = "MOVIES"
+    const val TV = "TV"
     const val TRENDING_MEDIA = "TRENDING_MEDIA"
 
 }

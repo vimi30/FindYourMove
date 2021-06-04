@@ -17,7 +17,7 @@ class TVShowAdapter(private val listener: OnShowClickListener,private val listTy
 
     inner class MyTrendingShowHolder(val binding: MovieItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
         override fun onClick(v: View?) {
-                listener.onTrendingShowClick(adapterPosition)
+                listener.onTrendingShowClick(absoluteAdapterPosition)
         }
 
         init {
@@ -27,7 +27,7 @@ class TVShowAdapter(private val listener: OnShowClickListener,private val listTy
     }
     inner class MyPopularShowHolder(val binding: MovieItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
         override fun onClick(v: View?) {
-            listener.onPopularShowClick(adapterPosition)
+            listener.onPopularShowClick(absoluteAdapterPosition)
         }
 
         init {
@@ -38,7 +38,7 @@ class TVShowAdapter(private val listener: OnShowClickListener,private val listTy
 
     inner class MyTopShowHolder(val binding: MovieItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
         override fun onClick(v: View?) {
-            listener.onTopRatedShowClick(adapterPosition)
+            listener.onTopRatedShowClick(absoluteAdapterPosition)
         }
 
         init {
@@ -47,16 +47,6 @@ class TVShowAdapter(private val listener: OnShowClickListener,private val listTy
 
     }
 
-//    inner class MySearchShowHolder(val binding: SearchItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener{
-//        override fun onClick(v: View?) {
-//            listener.onSearchItemClick(adapterPosition)
-//        }
-//
-//        init {
-//            itemView.setOnClickListener(this)
-//        }
-//
-//    }
 
     private val diffUtilCallBack = object : DiffUtil.ItemCallback<TVShowResponseItem>(){
         override fun areItemsTheSame(oldItem: TVShowResponseItem, newItem: TVShowResponseItem): Boolean {
@@ -75,32 +65,6 @@ class TVShowAdapter(private val listener: OnShowClickListener,private val listTy
         set(value) {
             differ.submitList(value)
         }
-
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyShowHolder {
-//        return MyShowHolder(MovieItemBinding.inflate(LayoutInflater.from(parent.context),parent,false))
-//    }
-//
-//    override fun onBindViewHolder(holder: MyShowHolder, position: Int) {
-//
-//        val currentShow = tvShows[position]
-//
-//        holder.binding.apply {
-//
-//            mImg.load(Constants.IMG_BASE_URL+currentShow.posterPath){
-//                crossfade(true)
-//                crossfade(1000)
-//            }
-//
-//            ratingBar.rating = (currentShow.voteAverage/2).toFloat()
-//
-//        }
-//
-//    }
-//
-//    override fun getItemCount(): Int {
-//        return tvShows.size
-//    }
-
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

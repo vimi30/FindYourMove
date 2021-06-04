@@ -1,6 +1,7 @@
 package com.example.findyourmove.api
 
 import androidx.annotation.AttrRes
+import com.example.findyourmove.model.credit.Credits
 import com.example.findyourmove.model.movie.SingleMovieModel
 import com.example.findyourmove.model.moviemodels.MovieResponse
 import com.example.findyourmove.model.trendingmodel.TrendingResponse
@@ -93,6 +94,13 @@ interface TMDBService {
         @Path("tv_id") query: Int,
         @Query("api_key") api_key : String
     ) : Response<TVShow>
+
+    @GET(Constants.END_POINT_CREDITS)
+    suspend fun getMovieCredits(
+        @Path("movie_id") query: Int,
+        @Query("api_key") api_key : String
+    ) : Response<Credits>
+
 
 
 }

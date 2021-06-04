@@ -6,7 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.HomeFragment">
+    tools:context=".view.HomeFragment"
+    >
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,21 +34,6 @@
 
         </androidx.appcompat.widget.Toolbar>
 
-        <androidx.recyclerview.widget.RecyclerView
-
-            android:id="@+id/searchRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            app:layout_behavior="com.google.android.material.AppBarLayout$ScrollingViewBehavior"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tb_toolbar"
-            app:layout_constraintVertical_bias="0.0" />
-
-
         <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
@@ -57,7 +43,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/searchRecyclerView">
+            app:layout_constraintTop_toBottomOf="@id/tb_toolbar">
 
             <TextView
                 android:layout_width="wrap_content"
