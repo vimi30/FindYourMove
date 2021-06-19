@@ -16,14 +16,20 @@ import com.example.findyourmove.adapters.TrendingAllAdapter
 import com.example.findyourmove.adapters.TVShowAdapter
 import com.example.findyourmove.api.Constants
 import com.example.findyourmove.databinding.FragmentHomeBinding
+import com.example.findyourmove.databinding.SnackbarLayoutBinding
 import com.example.findyourmove.model.trendingmodel.TrendingItem
+import com.example.findyourmove.utils.ConnectionStatus
 import com.example.findyourmove.viewmodels.MainViewModel
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.OnShowClickListener,TrendingAllAdapter.OnSearchResultItemClick {
 
     private lateinit var binding: FragmentHomeBinding
+    private lateinit var connectionStatus: ConnectionStatus
+    private lateinit var snackbar: SnackbarLayoutBinding
     private val sharedViewModel: MainViewModel by activityViewModels()
     private lateinit var popularMovieAdapter: MovieAdapter
     private lateinit var popularShowAdapter: TVShowAdapter
@@ -37,6 +43,7 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(layoutInflater)
+        snackbar = SnackbarLayoutBinding.inflate(layoutInflater)
         return binding.root
     }
 
@@ -46,6 +53,23 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
 
+        connectionStatus = ConnectionStatus(requireContext())
+
+        connectionStatus.observe(viewLifecycleOwner,{ isNetWorkAvailable ->
+
+            if(isNetWorkAvailable!=null && isNetWorkAvailable){
+                Log.d("Home Connection", "Connection Available: $isNetWorkAvailable")
+                
+            }else{
+                Log.d("Home Connection", "Connection Available: $isNetWorkAvailable")
+                snackbar.tvSnakebar.text = "No Internet Connection"
+                Snackbar.make(view ,"No Internet Connection",Snackbar.LENGTH_SHORT)
+                    .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
+                    .show()
+            }
+
+        })
+
         setUpPopularMovieRecyclerView()
 
         setUpPopularShowRecyclerView()
@@ -54,31 +78,8 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
 
         setUpSearchBar()
 
-//        setUpSearchRv()
-
-
-
     }
 
-//    private fun setUpSearchRv() {
-//
-//        searchAdapter = SearchAdapter(this,Constants.SEARCH)
-//        binding.searchRecyclerView.apply {
-//            adapter = searchAdapter
-//            layoutManager = LinearLayoutManager(context)
-//            addOnScrollListener(object : RecyclerView.OnScrollListener(){
-//                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-//                    if(!recyclerView.canScrollVertically(1)){
-//                        sharedViewModel.getNextPageSearchResult(1)
-//                    }
-//                }
-//            })
-//        }
-//
-//        sharedViewModel.searchAllResult.observe(viewLifecycleOwner, { listOfItems ->
-//            searchAdapter.searchList = listOfItems
-//        })
-//    }
 
     private fun setUpSearchBar() {
 
@@ -172,6 +173,7 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
         sharedViewModel.popularMovieResponse.value?.get(position)?.id?.let {
             sharedViewModel.getMovieDetailObject(it)
             sharedViewModel.getMovieCredit(it)
+            sharedViewModel.getVideo(it)
         }
         navController.navigate(R.id.movieDetailsFragment)
 
@@ -197,7 +199,10 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
     override fun onPopularShowClick(position: Int) {
 
         Log.d("Home Screen", "Clicked item : ${sharedViewModel.popularTVResponse.value?.get(position)?.name}")
-        sharedViewModel.popularTVResponse.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
+        sharedViewModel.popularTVResponse.value?.get(position)?.id?.let {
+            sharedViewModel.getTVShowDetails(it)
+            sharedViewModel.getTVVideo(it)
+        }
         navController.navigate(R.id.showDetailsFragment)
 
 
@@ -212,11 +217,15 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
             sharedViewModel.searchAllResult.value?.get(position)?.id?.let {
                 sharedViewModel.getMovieDetailObject(it)
                 sharedViewModel.getMovieCredit(it)
+                sharedViewModel.getVideo(it)
             }
             navController.navigate(R.id.movieDetailsFragment)
         }else{
             Log.d("Home Screen", "Clicked TV item : ${sharedViewModel.searchAllResult.value?.get(position)?.name}")
-            sharedViewModel.searchAllResult.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
+            sharedViewModel.searchAllResult.value?.get(position)?.id?.let {
+                sharedViewModel.getTVShowDetails(it)
+                sharedViewModel.getTVVideo(it)
+            }
             navController.navigate(R.id.showDetailsFragment)
         }
 
@@ -231,11 +240,15 @@ class HomeFragment : Fragment(),MovieAdapter.OnMovieClickListener,TVShowAdapter.
             sharedViewModel.trendingMedia.value?.get(position)?.id?.let {
                 sharedViewModel.getMovieDetailObject(it)
                 sharedViewModel.getMovieCredit(it)
+                sharedViewModel.getVideo(it)
             }
             navController.navigate(R.id.movieDetailsFragment)
         }else{
             Log.d("Home Screen", "Clicked item : ${sharedViewModel.trendingMedia.value?.get(position)?.name}")
-            sharedViewModel.trendingMedia.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
+            sharedViewModel.trendingMedia.value?.get(position)?.id?.let {
+                sharedViewModel.getTVShowDetails(it)
+                sharedViewModel.getTVVideo(it)
+            }
             navController.navigate(R.id.showDetailsFragment)
         }
 

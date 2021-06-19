@@ -32,21 +32,12 @@
             android:background="@drawable/shadow_gradient"
             android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
+            <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+                android:id="@+id/trailer_video"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_margin="20dp"
-                android:translationZ="10dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="100dp">
-
-                <ImageView
-                    android:id="@+id/backdrop"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                     />
-            </androidx.cardview.widget.CardView>
+                android:layout_height="wrap_content"
+                android:elevation="10dp"
+                />
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -56,8 +47,18 @@
                 android:elevation="5dp"
                 android:isIndicator="true"
                 android:numStars="5"
-                android:progressTint="#FFEB3B"
                 />
+
+<!--            <TextView-->
+<!--                android:id="@+id/rating"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:fontFamily="sans-serif-medium"-->
+<!--                android:padding="5dp"-->
+<!--                android:text="8.6/10"-->
+<!--                android:textColor="@color/teal_200"-->
+<!--                android:textSize="24sp"/>-->
 
             <TextView
                 android:id="@+id/movieTitle"
@@ -67,7 +68,7 @@
                 android:fontFamily="sans-serif-medium"
                 android:padding="5dp"
                 android:textColor="@color/white"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/releaseYear"

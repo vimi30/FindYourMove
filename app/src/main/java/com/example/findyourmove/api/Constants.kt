@@ -18,6 +18,8 @@ object Constants {
     const val END_POINT_TV_SHOW_DETAILS = "3/tv/{tv_id}"
     const val END_POINT_CREDITS = "3/movie/{movie_id}/credits"
     const val IMG_BASE_URL = "https://image.tmdb.org/t/p/w500"
+    const val END_POINT_MOVIE_VIDEOS = "3/movie/{movie_id}/videos"
+    const val END_POINT_TV_VIDEOS = "3/tv/{tv_id}/videos"
 
 
 

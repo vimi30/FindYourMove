@@ -3,6 +3,7 @@ package com.example.findyourmove.repository
 import com.example.findyourmove.api.Constants
 import com.example.findyourmove.api.TMDBService
 import com.example.findyourmove.model.credit.Credits
+import com.example.findyourmove.model.video.Videos
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -31,14 +32,14 @@ class MainRepository
     suspend fun getTrendingMedia() =
             tmdbService.getTrendingMedia(Constants.API_KEY)
 
-    suspend fun getSearchAllResult(query:String,pageNumber:Int) =
-        tmdbService.getSearchResult(Constants.API_KEY,pageNumber,query)
+//    suspend fun getSearchAllResult(query:String,pageNumber:Int) =
+//        tmdbService.getSearchResult(Constants.API_KEY,pageNumber,query)
 
     suspend fun getSearchMovieResult(query:String,pageNumber:Int) =
         tmdbService.getMovieSearchResult(Constants.API_KEY,pageNumber,query)
 
-    suspend fun getSearchTvResult(query:String,pageNumber: Int) =
-        tmdbService.getTVSearchResult(Constants.API_KEY,pageNumber,query)
+//    suspend fun getSearchTvResult(query:String,pageNumber: Int) =
+//        tmdbService.getTVSearchResult(Constants.API_KEY,pageNumber,query)
 
     suspend fun getMovieDetails(movie_id:Int) =
             tmdbService.getMovieDetails(movie_id,Constants.API_KEY)
@@ -48,5 +49,13 @@ class MainRepository
 
     suspend fun getMovieCredits(movie_id: Int): Response<Credits> {
         return tmdbService.getMovieCredits(movie_id,Constants.API_KEY)
+    }
+
+    suspend fun getMovieVideo(movie_id: Int):Response<Videos>{
+        return tmdbService.getMovieVideos(movie_id,Constants.API_KEY)
+    }
+
+    suspend fun getTVVideo(tv_id: Int):Response<Videos>{
+        return tmdbService.getTVVideos(tv_id,Constants.API_KEY)
     }
 }

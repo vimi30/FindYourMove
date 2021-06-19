@@ -5,4 +5,6 @@
     <string name="all">ALL</string>
     <string name="movies">MOVIES</string>
     <string name="tv">TV</string>
+    <string name="official_trailer">Official Trailer</string>
+    <string name="base10">/10</string>
 </resources>

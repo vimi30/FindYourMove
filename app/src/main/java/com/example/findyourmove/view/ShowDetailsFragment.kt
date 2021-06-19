@@ -6,18 +6,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import coil.load
-import com.example.findyourmove.R
 import com.example.findyourmove.adapters.SeasonListAdapter
-import com.example.findyourmove.adapters.TVShowAdapter
 import com.example.findyourmove.api.Constants
 import com.example.findyourmove.databinding.FragmentShowDetailsBinding
 import com.example.findyourmove.model.tvshow.Genre
 import com.example.findyourmove.viewmodels.MainViewModel
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 
 class ShowDetailsFragment : Fragment(){
 
@@ -28,7 +27,7 @@ class ShowDetailsFragment : Fragment(){
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentShowDetailsBinding.inflate(layoutInflater)
         return binding.root
@@ -38,6 +37,7 @@ class ShowDetailsFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
         getDetails()
+        getVideos()
     }
 
     private fun getDetails() {
@@ -45,10 +45,6 @@ class ShowDetailsFragment : Fragment(){
             Log.d("MoviesDetails", "Movie Details object: ${it.name}")
             binding.apply {
                 poster.load(Constants.IMG_BASE_URL + it.posterPath) {
-                    crossfade(true)
-                    crossfade(1000)
-                }
-                backdrop.load(Constants.IMG_BASE_URL + it.backdropPath) {
                     crossfade(true)
                     crossfade(1000)
                 }
@@ -61,7 +57,7 @@ class ShowDetailsFragment : Fragment(){
 
                 ratingBar.rating = (it.voteAverage / 2).toFloat()
                 tvName.text = it.name
-                var year : String = ""
+                var year = ""
                 if(!it.firstAirDate.isNullOrEmpty() && !it.lastAirDate.isNullOrEmpty()){
                     year = "${it.firstAirDate.subSequence(0,4)} - ${it.lastAirDate.subSequence(0,4)}"
                 }else if(!it.firstAirDate.isNullOrEmpty() && it.lastAirDate.isNullOrEmpty()){
@@ -84,6 +80,29 @@ class ShowDetailsFragment : Fragment(){
             }
         }
         return sb.toString()
+
+    }
+
+    private fun getVideos(){
+
+
+
+        sharedViewModel.videos.observe(viewLifecycleOwner,{
+
+//            lifecycle.addObserver(binding.trailerVideo)
+            binding.trailerVideo.addYouTubePlayerListener(object :
+                AbstractYouTubePlayerListener() {
+                override fun onReady(youTubePlayer: YouTubePlayer) {
+
+                    if(it.results.isNotEmpty()){
+                        val videoId = it.results[0].key
+                        youTubePlayer.cueVideo(videoId,0f)
+                    }
+
+                }
+            })
+
+        })
 
     }
 }

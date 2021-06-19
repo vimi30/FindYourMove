@@ -120,6 +120,7 @@ class MoviesFragment : Fragment(), MovieAdapter.OnMovieClickListener{
         sharedViewModel.popularMovieResponse.value?.get(position)?.id?.let {
             sharedViewModel.getMovieDetailObject(it)
             sharedViewModel.getMovieCredit(it)
+            sharedViewModel.getVideo(it)
         }
         navController.navigate(R.id.movieDetailsFragment)
     }
@@ -129,6 +130,7 @@ class MoviesFragment : Fragment(), MovieAdapter.OnMovieClickListener{
         sharedViewModel.trendingMovieResponse.value?.get(position)?.id?.let {
             sharedViewModel.getMovieDetailObject(it)
             sharedViewModel.getMovieCredit(it)
+            sharedViewModel.getVideo(it)
         }
         navController.navigate(R.id.movieDetailsFragment)
     }
@@ -138,6 +140,7 @@ class MoviesFragment : Fragment(), MovieAdapter.OnMovieClickListener{
         sharedViewModel.upComingMovieResponse.value?.get(position)?.id?.let {
             sharedViewModel.getMovieDetailObject(it)
             sharedViewModel.getMovieCredit(it)
+            sharedViewModel.getVideo(it)
         }
         navController.navigate(R.id.movieDetailsFragment)
     }

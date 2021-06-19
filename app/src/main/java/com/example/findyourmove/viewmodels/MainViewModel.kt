@@ -19,6 +19,7 @@ import com.example.findyourmove.model.moviemodels.MovieResponseItem
 import com.example.findyourmove.model.trendingmodel.TrendingItem
 import com.example.findyourmove.model.tvshow.TVShow
 import com.example.findyourmove.model.tvshowmodel.TVShowResponseItem
+import com.example.findyourmove.model.video.Videos
 import com.example.findyourmove.repository.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -97,6 +98,10 @@ constructor(private val repository: MainRepository) : ViewModel(){
     val tvShowDetails : LiveData<TVShow>
         get() = _tvShowDetails
 
+    private val _videos = MutableLiveData<Videos>()
+    val videos : LiveData<Videos>
+        get() = _videos
+
 
 
 
@@ -126,7 +131,7 @@ constructor(private val repository: MainRepository) : ViewModel(){
                         _tvShowDetails.postValue(response.body())
                         Log.d("TVShowDetails","TVShowDetailsResponse: ${response.body()?.name}")
                     } else{
-                        Log.d("TVShowDetails","TVShowDetailsResponse: ${response.errorBody().toString()}")
+                        Log.e("TVShowDetails","TVShowDetailsResponse: ${response.errorBody().toString()}")
                     }
 
                 }
@@ -147,6 +152,34 @@ constructor(private val repository: MainRepository) : ViewModel(){
                     }
 
                     }
+        }
+    }
+
+    fun getVideo(movie_id: Int){
+        viewModelScope.launch {
+            repository.getMovieVideo(movie_id)
+                .let { response ->
+
+                    if(response.isSuccessful){
+                        _videos.postValue(response.body())
+                    }else{
+                        Log.e("error","Error while getting the videos: ${response.errorBody().toString()}")
+                    }
+                }
+        }
+    }
+
+    fun getTVVideo(tv_id: Int){
+        viewModelScope.launch {
+            repository.getTVVideo(tv_id)
+                .let { response ->
+
+                    if(response.isSuccessful){
+                        _videos.postValue(response.body())
+                    }else{
+                        Log.e("error","Error while getting the videos: ${response.errorBody().toString()}")
+                    }
+                }
         }
     }
 
@@ -396,6 +429,8 @@ constructor(private val repository: MainRepository) : ViewModel(){
 
         }
     }
+
+
 
 
     fun getSearchAllResults(query: String){

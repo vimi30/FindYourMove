@@ -32,21 +32,11 @@
             android:background="@drawable/shadow_gradient"
             android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
+            <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+                android:id="@+id/trailer_video"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_margin="20dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="100dp"
-                android:translationZ="10dp">
-
-                <ImageView
-                    android:id="@+id/backdrop"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    />
-            </androidx.cardview.widget.CardView>
+                android:layout_height="wrap_content"
+                />
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -58,6 +48,15 @@
                 android:progressTint="#FFEB3B"
                 />
 
+<!--            <TextView-->
+<!--                android:id="@+id/rating"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:fontFamily="sans-serif-medium"-->
+<!--                android:padding="5dp"-->
+<!--                android:textColor="@color/teal_200"-->
+<!--                android:textSize="24sp"/>-->
             <TextView
                 android:id="@+id/tvName"
                 android:layout_width="wrap_content"

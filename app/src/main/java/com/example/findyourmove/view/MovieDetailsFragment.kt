@@ -19,6 +19,8 @@ import com.example.findyourmove.databinding.FragmentMovieDetailsBinding
 import com.example.findyourmove.model.credit.Crew
 import com.example.findyourmove.model.movie.Genre
 import com.example.findyourmove.viewmodels.MainViewModel
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 
 
 class MovieDetailsFragment : Fragment() {
@@ -42,6 +44,7 @@ class MovieDetailsFragment : Fragment() {
         getDetails()
         setUpCastRv()
         setUpCrewRv()
+        getVideos()
     }
 
     private fun setUpCrewRv() {
@@ -81,15 +84,11 @@ class MovieDetailsFragment : Fragment() {
                     crossfade(true)
                     crossfade(1000)
                 }
-                backdrop.load(Constants.IMG_BASE_URL + it.backdropPath) {
-                    crossfade(true)
-                    crossfade(1000)
-                }
-
 
                 movieGenre.text = getStringOfGenres(it.genres)
                 runtime.text = it.runtime.toString()+" Min"
                 ratingBar.rating = (it.voteAverage / 2).toFloat()
+//                rating.text = it.voteAverage
                 movieTitle.text = it.title
                 var year : String = if(!it.releaseDate.isNullOrEmpty()){
                     it.releaseDate.subSequence(0, 4).toString()
@@ -114,6 +113,26 @@ class MovieDetailsFragment : Fragment() {
             }
         }
         return sb.toString()
+
+    }
+
+    private fun getVideos(){
+
+        sharedViewModel.videos.observe(viewLifecycleOwner,{
+
+//            lifecycle.addObserver(binding.trailerVideo)
+            binding.trailerVideo.addYouTubePlayerListener(object :
+                AbstractYouTubePlayerListener() {
+                override fun onReady(youTubePlayer: YouTubePlayer) {
+                    if(it.results.isNotEmpty()){
+                        val videoId = it.results[0].key
+                        youTubePlayer.cueVideo(videoId,0f)
+                    }
+
+                }
+            })
+
+        })
 
     }
 

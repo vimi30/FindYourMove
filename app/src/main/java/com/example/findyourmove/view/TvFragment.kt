@@ -126,19 +126,28 @@ class TvFragment : Fragment(), TVShowAdapter.OnShowClickListener{
 
     override fun onTrendingShowClick(position: Int) {
         Log.d("ShowClicked", "Clicked item : ${sharedViewModel.trendingTVResponse.value?.get(position)?.name}")
-        sharedViewModel.trendingTVResponse.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
+        sharedViewModel.trendingTVResponse.value?.get(position)?.id?.let {
+            sharedViewModel.getTVShowDetails(it)
+            sharedViewModel.getTVVideo(it)
+        }
         navController.navigate(R.id.showDetailsFragment)
     }
 
     override fun onTopRatedShowClick(position: Int) {
         Log.d("ShowClicked", "Clicked item : ${sharedViewModel.topRatedTVResponse.value?.get(position)?.name}")
-        sharedViewModel.topRatedTVResponse.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
+        sharedViewModel.topRatedTVResponse.value?.get(position)?.id?.let {
+            sharedViewModel.getTVShowDetails(it)
+            sharedViewModel.getTVVideo(it)
+        }
         navController.navigate(R.id.showDetailsFragment)
     }
 
     override fun onPopularShowClick(position: Int) {
         Log.d("ShowClicked", "Clicked item : ${sharedViewModel.popularTVResponse.value?.get(position)?.name}")
-        sharedViewModel.popularTVResponse.value?.get(position)?.id?.let { sharedViewModel.getTVShowDetails(it) }
+        sharedViewModel.popularTVResponse.value?.get(position)?.id?.let {
+            sharedViewModel.getTVShowDetails(it)
+            sharedViewModel.getTVVideo(it)
+        }
         navController.navigate(R.id.showDetailsFragment)
     }
 }
